@@ -5,6 +5,7 @@ use crossterm::{
     ExecutableCommand, QueueableCommand,
 };
 
+pub mod cpu;
 pub mod de;
 pub mod kernel;
 pub mod memory;
