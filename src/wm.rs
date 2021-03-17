@@ -1,58 +1,67 @@
-use std::{ffi::CString, ptr};
+use std::convert::TryInto;
 
 use crossterm::style::Colorize;
-use x11_dl::xlib;
+use x11rb::{
+    connection::Connection,
+    protocol::xproto::{AtomEnum, ConnectionExt},
+};
 
 use crate::styled_data::StyledData;
 
 fn get_wm_name() -> String {
-    let mut wm: String = String::new();
-    unsafe {
-        let xlib = xlib::Xlib::open().unwrap();
-        let display = (xlib.XOpenDisplay)(ptr::null());
+    let conn = x11rb::connect(None).unwrap().0;
+    let screen = &conn.setup().roots[0];
+    let window = screen.root;
 
-        let screen = (xlib.XDefaultScreen)(display);
-        let root = (xlib.XRootWindow)(display, screen);
+    let wm_check_atom = conn
+        .intern_atom(false, b"_NET_SUPPORTING_WM_CHECK")
+        .unwrap()
+        .reply()
+        .unwrap();
 
-        let net_wm_name = CString::new("_NET_WM_NAME").unwrap();
-        let utf_8_str = CString::new("UTF8_STRING").unwrap();
+    let wm_check_ret = x11rb::protocol::xproto::get_property(
+        &conn,
+        false,
+        window,
+        wm_check_atom.atom,
+        AtomEnum::NONE,
+        0,
+        1024,
+    )
+    .unwrap()
+    .reply()
+    .unwrap()
+    .value;
 
-        let netwmname = (xlib.XInternAtom)(display, net_wm_name.as_ptr(), 0);
+    let wm_window = u32::from_le_bytes(wm_check_ret.as_slice().try_into().unwrap());
 
-        let utf8string = (xlib.XInternAtom)(display, utf_8_str.as_ptr(), 0);
+    let net_wm_name_atom = conn
+        .intern_atom(false, b"_NET_WM_NAME")
+        .unwrap()
+        .reply()
+        .unwrap();
 
-        let mut real: u64 = 0;
-        let mut format: i32 = 0;
-        let mut n: u64 = 0;
-        let mut extra: u64 = 0;
-        let mut data: *mut u8 = &mut 0;
+    let wm_name_ret = x11rb::protocol::xproto::get_property(
+        &conn,
+        false,
+        wm_window,
+        net_wm_name_atom.atom,
+        AtomEnum::NONE,
+        0,
+        1024,
+    )
+    .unwrap()
+    .reply()
+    .unwrap()
+    .value;
 
-        (xlib.XGetWindowProperty)(
-            display,
-            root,
-            netwmname,
-            0,
-            32,
-            0,
-            utf8string,
-            &mut real,
-            &mut format,
-            &mut n,
-            &mut extra,
-            &mut data,
-        );
-
-        let u8_slice = core::slice::from_raw_parts(data, n as usize);
-        let name = std::str::from_utf8(u8_slice).unwrap().to_string();
-
-        wm.push_str(&name);
-    }
-    wm
+    std::str::from_utf8(wm_name_ret.as_slice())
+        .unwrap()
+        .to_string()
 }
 
 pub fn get_styled_wm() -> StyledData {
     let wm_name = get_wm_name();
-    let len = wm_name.len();
 
-    StyledData::from(vec!["WM: ".to_string().cyan(), wm_name.white()], len + 4)
+    StyledData::from(vec!["WM: ".to_string().cyan(), wm_name.white()], 4)
 }
