@@ -8,20 +8,20 @@ fn get_raw_os_data() -> String {
     fs::read_to_string("/etc/os-release").unwrap()
 }
 
-fn get_pretty_name(raw: &String) -> String {
+fn get_pretty_name(raw: &str) -> String {
     for i in raw.lines() {
         if i.contains("PRETTY_NAME") {
             return i
-                .split("=")
+                .split('=')
                 .nth(1)
                 .unwrap()
-                .split("\"")
+                .split('\"')
                 .nth(1)
                 .unwrap()
                 .to_string();
         }
     }
-    return "".to_string();
+    "".to_string()
 }
 
 pub fn get_styled_os() -> StyledData {

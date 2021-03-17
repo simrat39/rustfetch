@@ -17,7 +17,7 @@ pub mod wm;
 
 pub fn print_styled_text(
     out: &mut Stdout,
-    vec: &Vec<StyledContent<String>>,
+    vec: &[StyledContent<String>],
     padding: usize,
 ) -> Result<(), Box<dyn Error>> {
     out.execute(Print(" ".repeat(padding)))?;

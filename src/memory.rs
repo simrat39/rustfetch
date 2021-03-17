@@ -8,32 +8,32 @@ fn get_raw_mem_data() -> String {
     fs::read_to_string("/proc/meminfo").expect("An error occured while reading /proc/meminfo")
 }
 
-fn get_total_memory(raw: &String) -> usize {
+fn get_total_memory(raw: &str) -> usize {
     return raw
         .lines()
         .next()
         .unwrap()
-        .split(":")
+        .split(':')
         .nth(1)
         .unwrap()
         .trim()
-        .split(" ")
+        .split(' ')
         .next()
         .unwrap()
         .parse::<usize>()
         .unwrap();
 }
 
-fn get_available_memory(raw: &String) -> usize {
+fn get_available_memory(raw: &str) -> usize {
     return raw
         .lines()
         .nth(2)
         .unwrap()
-        .split(":")
+        .split(':')
         .nth(1)
         .unwrap()
         .trim()
-        .split(" ")
+        .split(' ')
         .next()
         .unwrap()
         .parse::<usize>()

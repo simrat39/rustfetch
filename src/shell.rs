@@ -5,7 +5,7 @@ use crossterm::style::Colorize;
 use crate::styled_data::StyledData;
 
 fn get_shell_path() -> String {
-    env::var("SHELL").unwrap_or("sh".to_string())
+    env::var("SHELL").unwrap_or_else(|_| "sh".to_string())
 }
 
 pub fn get_styled_shell() -> StyledData {

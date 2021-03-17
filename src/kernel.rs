@@ -6,7 +6,7 @@ use crate::styled_data::StyledData;
 
 fn get_kernel_release() -> String {
     fs::read_to_string("/proc/sys/kernel/osrelease")
-        .unwrap_or("".to_string())
+        .unwrap_or_else(|_| "".to_string())
         .trim()
         .to_string()
 }

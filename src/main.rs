@@ -19,7 +19,7 @@ fn main() {
     let styled_shell = get_styled_shell();
     let styled_memory = get_styled_memory();
 
-    println!("");
+    println!();
 
     print_styled_text(&mut out, &styled_name.styles, padding).unwrap();
     print_styled_text(&mut out, &get_styled_line(styled_name.len), padding).unwrap();
@@ -32,5 +32,5 @@ fn main() {
     print_styled_text(&mut out, &styled_shell.styles, padding).unwrap();
     print_styled_text(&mut out, &styled_memory.styles, padding).unwrap();
 
-    println!("");
+    println!();
 }

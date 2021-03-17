@@ -6,8 +6,8 @@ use crate::styled_data::StyledData;
 
 fn get_raw_uptime() -> usize {
     let s = fs::read_to_string("/proc/uptime")
-        .unwrap_or("0".to_string())
-        .split(" ")
+        .unwrap_or_else(|_| "0".to_string())
+        .split(' ')
         .into_iter()
         .next()
         .unwrap_or("0")
@@ -23,7 +23,7 @@ fn parse_seconds(seconds: usize) -> String {
     let mut remainder = seconds % (60 * 60);
 
     let minutes = remainder / 60;
-    remainder = remainder % 60;
+    remainder %= 60;
 
     let left_seconds = remainder;
 
