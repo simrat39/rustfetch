@@ -51,3 +51,13 @@ pub fn get_styled_uptime() -> StyledData {
 
     StyledData::from(styles, 8 + len)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn parse_test() {
+        assert_eq!(parse_seconds(120), "2m ");
+        assert_eq!(parse_seconds(86400), "24h ");
+    }
+}

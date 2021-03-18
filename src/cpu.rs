@@ -61,3 +61,13 @@ pub fn get_styled_cpu() -> StyledData {
         len + 5,
     )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::parse_line;
+    #[test]
+    fn line_parse_test() {
+        let line = "This is a: Test";
+        assert_eq!(parse_line(line), "Test");
+    }
+}
